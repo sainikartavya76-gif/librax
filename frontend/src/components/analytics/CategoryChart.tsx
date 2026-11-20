@@ -1,0 +1,40 @@
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../../api/client';
+
+const CategoryChart: React.FC = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['analytics', 'charts', 'categories'],
+    queryFn: () => apiClient.get('/analytics/charts/categories').then(r => r.data),
+  });
+
+  if (isLoading) {
+    return <div className="h-64 w-full bg-gray-100 animate-pulse rounded-md" />;
+  }
+  if (error || !data || data.length === 0) {
+    return <div className="h-64 w-full flex items-center justify-center text-textMuted border border-border rounded-md">No data available</div>;
+  }
+
+  return (
+    <div className="bg-surface p-4 border border-border rounded-lg shadow-sm">
+      <h3 className="text-sm font-semibold text-textPrimary mb-4">Books by Category</h3>
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E4E0" />
+            <XAxis dataKey="category" tick={{ fontSize: 12, fill: '#6B6B67' }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fontSize: 12, fill: '#6B6B67' }} tickLine={false} axisLine={false} />
+            <Tooltip
+              cursor={{ fill: '#FAFAF9' }}
+              contentStyle={{ borderRadius: '8px', border: '1px solid #E5E4E0' }}
+              formatter={(value: number) => [value, 'Books']}
+            />
+            <Bar dataKey="count" fill="#2563EB" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
+export default CategoryChart;

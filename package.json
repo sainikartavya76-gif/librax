@@ -1,0 +1,29 @@
+{
+  "name": "librax",
+  "version": "1.0.0",
+  "description": "LibraX — Enterprise Grade Fullstack Library Operations System with C DSA Engine",
+  "private": true,
+  "main": "node-backend/src/server.js",
+  "scripts": {
+    "setup": "npm --prefix node-backend install && npm --prefix frontend install && npm run seed && npm run build",
+    "seed": "node node-backend/src/database/seed.js",
+    "build": "npm --prefix frontend run build",
+    "start": "node node-backend/src/server.js",
+    "dev:backend": "node node-backend/src/server.js",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start:standalone": "powershell -Command \"Start-Process 'standalone/index.html'\""
+  },
+  "keywords": [
+    "library-management-system",
+    "react",
+    "typescript",
+    "express",
+    "sqlite",
+    "c-dsa-engine",
+    "tailwind-css",
+    "vite",
+    "fullstack"
+  ],
+  "author": "sainikartavya76-gif",
+  "license": "MIT"
+}

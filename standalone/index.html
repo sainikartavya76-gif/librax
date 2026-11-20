@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LibraX — Modern Library Operations System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Merriweather', 'Georgia', 'serif'],
+            display: ['Cinzel', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            bg: 'var(--bg-color)',
+            surface: 'var(--surface-color)',
+            'surface-2': 'var(--surface-2-color)',
+            border: 'var(--border-color)',
+            ink: 'var(--ink-color)',
+            'ink-2': 'var(--ink-2-color)',
+            'ink-muted': 'var(--ink-muted-color)',
+            accent: 'var(--accent-color)',
+            'accent-hover': 'var(--accent-hover-color)',
+            'accent-bg': 'var(--accent-bg-color)',
+            crit: '#ef4444',
+            warn: '#f59e0b',
+            success: '#10b981',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --surface-color: #ffffff;
+      --surface-2-color: #f1f5f9;
+      --border-color: #e2e8f0;
+      --ink-color: #0f172a;
+      --ink-2-color: #334155;
+      --ink-muted-color: #64748b;
+      --accent-color: #4f46e5;
+      --accent-hover-color: #4338ca;
+      --accent-bg-color: rgba(79, 70, 229, 0.08);
+      --topbar-height: 56px;
+    }
+    .dark {
+      --bg-color: #0b0f19;
+      --surface-color: #111827;
+      --surface-2-color: #1f2937;
+      --border-color: #2e384d;
+      --ink-color: #f8fafc;
+      --ink-2-color: #cbd5e1;
+      --ink-muted-color: #94a3b8;
+      --accent-color: #6366f1;
+      --accent-hover-color: #4f46e5;
+      --accent-bg-color: rgba(99, 102, 241, 0.14);
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--ink-color);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .card {
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+    }
+    .card-2 {
+      background-color: var(--surface-2-color);
+      border: 1px solid var(--border-color);
+      border-radius: 0.375rem;
+    }
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: #ffffff;
+      transition: all 0.15s ease;
+    }
+    .btn-primary:hover {
+      background-color: var(--accent-hover-color);
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+    /* Clamp */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+
+  <!-- React 18 UMD (Cloudflare CDN with unpkg fallback) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script>
+    if (typeof window.React === 'undefined') {
+      document.write('<script src="https://unpkg.com/react@18/umd/react.production.min.js"><\/script>');
+      document.write('<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React Standalone Application -->
+  <script>
+const { useState, useEffect, useMemo, useRef } = React;
+function Icon({ name, className = "w-4 h-4", ...props }) {
+  const icons = {
+    BookOpen: /* @__PURE__ */ React.createElement("path", { d: "M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" }),
+    Search: /* @__PURE__ */ React.createElement("path", { d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z", strokeLinecap: "round" }),
+    Plus: /* @__PURE__ */ React.createElement("path", { d: "M12 5v14M5 12h14", strokeLinecap: "round" }),
+    ArrowRight: /* @__PURE__ */ React.createElement("path", { d: "M5 12h14M12 5l7 7-7 7", strokeLinecap: "round", strokeLinejoin: "round" }),
+    ArrowLeft: /* @__PURE__ */ React.createElement("path", { d: "M19 12H5M12 19l-7-7 7-7", strokeLinecap: "round", strokeLinejoin: "round" }),
+    Check: /* @__PURE__ */ React.createElement("path", { d: "M20 6L9 17l-5-5", strokeLinecap: "round", strokeLinejoin: "round" }),
+    X: /* @__PURE__ */ React.createElement("path", { d: "M18 6L6 18M6 6l12 12", strokeLinecap: "round" }),
+    Shield: /* @__PURE__ */ React.createElement("path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }),
+    BookMarked: /* @__PURE__ */ React.createElement("path", { d: "M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z M10 2v8l3-2.5 3 2.5V2" }),
+    GraduationCap: /* @__PURE__ */ React.createElement("path", { d: "M22 10v6M2 10l10-5 10 5-10 5z M6 12v5c3 3 9 3 12 0v-5" }),
+    Bell: /* @__PURE__ */ React.createElement("path", { d: "M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9 M13.73 21a2 2 0 0 1-3.46 0" }),
+    Sun: /* @__PURE__ */ React.createElement("path", { d: "M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42 M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z", strokeLinecap: "round" }),
+    Moon: /* @__PURE__ */ React.createElement("path", { d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" }),
+    Zap: /* @__PURE__ */ React.createElement("polygon", { points: "13 2 3 14 12 14 11 22 21 10 12 10 13 2" }),
+    RotateCcw: /* @__PURE__ */ React.createElement("path", { d: "M1 4v6h6 M3.51 15a9 9 0 1 0 2.13-9.36L1 10", strokeLinecap: "round", strokeLinejoin: "round" }),
+    Trash2: /* @__PURE__ */ React.createElement("path", { d: "M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6", strokeLinecap: "round", strokeLinejoin: "round" }),
+    Edit: /* @__PURE__ */ React.createElement("path", { d: "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7 M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z", strokeLinecap: "round", strokeLinejoin: "round" }),
+    Calendar: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("rect", { x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2" }), /* @__PURE__ */ React.createElement("line", { x1: "16", y1: "2", x2: "16", y2: "6" }), /* @__PURE__ */ React.createElement("line", { x1: "8", y1: "2", x2: "8", y2: "6" }), /* @__PURE__ */ React.createElement("line", { x1: "3", y1: "10", x2: "21", y2: "10" })),
+    Bookmark: /* @__PURE__ */ React.createElement("path", { d: "M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" }),
+    Volume2: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("polygon", { points: "11 5 6 9 2 9 2 15 6 15 11 19 11 5" }), /* @__PURE__ */ React.createElement("path", { d: "M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" })),
+    VolumeX: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("polygon", { points: "11 5 6 9 2 9 2 15 6 15 11 19 11 5" }), /* @__PURE__ */ React.createElement("line", { x1: "23", y1: "9", x2: "17", y2: "15" }), /* @__PURE__ */ React.createElement("line", { x1: "17", y1: "9", x2: "23", y2: "15" })),
+    Maximize2: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("polyline", { points: "15 3 21 3 21 9" }), /* @__PURE__ */ React.createElement("polyline", { points: "9 21 3 21 3 15" }), /* @__PURE__ */ React.createElement("line", { x1: "21", y1: "3", x2: "14", y2: "10" }), /* @__PURE__ */ React.createElement("line", { x1: "3", y1: "21", x2: "10", y2: "14" })),
+    Minimize2: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("polyline", { points: "4 14 10 14 10 20" }), /* @__PURE__ */ React.createElement("polyline", { points: "20 10 14 10 14 4" }), /* @__PURE__ */ React.createElement("line", { x1: "14", y1: "10", x2: "21", y2: "3" }), /* @__PURE__ */ React.createElement("line", { x1: "3", y1: "21", x2: "10", y2: "14" })),
+    Settings: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("circle", { cx: "12", cy: "12", r: "3" }), /* @__PURE__ */ React.createElement("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" })),
+    Share2: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("circle", { cx: "18", cy: "5", r: "3" }), /* @__PURE__ */ React.createElement("circle", { cx: "6", cy: "12", r: "3" }), /* @__PURE__ */ React.createElement("circle", { cx: "18", cy: "19", r: "3" }), /* @__PURE__ */ React.createElement("line", { x1: "8.59", y1: "13.51", x2: "15.42", y2: "17.49" }), /* @__PURE__ */ React.createElement("line", { x1: "15.41", y1: "6.51", x2: "8.59", y2: "10.49" })),
+    Sparkles: /* @__PURE__ */ React.createElement("path", { d: "M12 3l1.912 5.885L20 10.8l-5.885 1.912L12 18.6l-1.912-5.888L4 10.8l6.088-1.915L12 3z" }),
+    TrendingUp: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("polyline", { points: "23 6 13.5 15.5 8.5 10.5 1 18" }), /* @__PURE__ */ React.createElement("polyline", { points: "17 6 23 6 23 12" })),
+    Layers: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("polygon", { points: "12 2 2 7 12 12 22 7 12 2" }), /* @__PURE__ */ React.createElement("polyline", { points: "2 17 12 22 22 17" }), /* @__PURE__ */ React.createElement("polyline", { points: "2 12 12 17 22 12" })),
+    Cpu: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("rect", { x: "4", y: "4", width: "16", height: "16", rx: "2" }), /* @__PURE__ */ React.createElement("rect", { x: "9", y: "9", width: "6", height: "6" }), /* @__PURE__ */ React.createElement("line", { x1: "9", y1: "1", x2: "9", y2: "4" }), /* @__PURE__ */ React.createElement("line", { x1: "15", y1: "1", x2: "15", y2: "4" }), /* @__PURE__ */ React.createElement("line", { x1: "9", y1: "20", x2: "9", y2: "23" }), /* @__PURE__ */ React.createElement("line", { x1: "15", y1: "20", x2: "15", y2: "23" }), /* @__PURE__ */ React.createElement("line", { x1: "20", y1: "9", x2: "23", y2: "9" }), /* @__PURE__ */ React.createElement("line", { x1: "20", y1: "14", x2: "23", y2: "14" }), /* @__PURE__ */ React.createElement("line", { x1: "1", y1: "9", x2: "4", y2: "9" }), /* @__PURE__ */ React.createElement("line", { x1: "1", y1: "14", x2: "4", y2: "14" })),
+    Play: /* @__PURE__ */ React.createElement("polygon", { points: "5 3 19 12 5 21 5 3" }),
+    Pause: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("rect", { x: "6", y: "4", width: "4", height: "16" }), /* @__PURE__ */ React.createElement("rect", { x: "14", y: "4", width: "4", height: "16" })),
+    RefreshCw: /* @__PURE__ */ React.createElement("path", { d: "M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15", strokeLinecap: "round", strokeLinejoin: "round" }),
+    SlidersHorizontal: /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("line", { x1: "4", y1: "21", x2: "4", y2: "14" }), /* @__PURE__ */ React.createElement("line", { x1: "4", y1: "10", x2: "4", y2: "3" }), /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "21", x2: "12", y2: "12" }), /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "8", x2: "12", y2: "3" }), /* @__PURE__ */ React.createElement("line", { x1: "20", y1: "21", x2: "20", y2: "16" }), /* @__PURE__ */ React.createElement("line", { x1: "20", y1: "12", x2: "20", y2: "3" }), /* @__PURE__ */ React.createElement("line", { x1: "1", y1: "14", x2: "7", y2: "14" }), /* @__PURE__ */ React.createElement("line", { x1: "9", y1: "8", x2: "15", y2: "8" }), /* @__PURE__ */ React.createElement("line", { x1: "17", y1: "16", x2: "23", y2: "16" }))
+  };
+  return /* @__PURE__ */ React.createElement(
+    "svg",
+    {
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      className,
+      ...props
+    },
+    icons[name] || icons.BookOpen
+  );
+}
+const DEFAULT_DATA = {
+  users: [
+    { id: 1, full_name: "Administrator", email: "admin@librax.com", role: "ADMIN", is_active: true, student_id: "ADM001" },
+    { id: 2, full_name: "Jane Smith", email: "librarian@librax.com", role: "LIBRARIAN", is_active: true, student_id: "LIB001" },
+    { id: 3, full_name: "Alex Johnson", email: "student@librax.com", role: "STUDENT", is_active: true, student_id: "STU1001" }
+  ],
+  books: [
+    {
+      id: 1,
+      title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+      author: "Robert C. Martin",
+      isbn: "978-0132350884",
+      category: "Technology",
+      publisher: "Prentice Hall",
+      publication_year: 2008,
+      description: "A structured engineering handbook examining maintainable design patterns, readability guidelines, and software craft principles.",
+      cover_url: "https://images.unsplash.com/photo-1532012164546-f432f2e37b73?w=500&q=80",
+      total_copies: 5,
+      available_copies: 3,
+      shelf_location: "Tech A-12",
+      pages: 464,
+      language: "English"
+    },
+    {
+      id: 2,
+      title: "Designing Data-Intensive Applications",
+      author: "Martin Kleppmann",
+      isbn: "978-1449373320",
+      category: "Technology",
+      publisher: "O'Reilly Media",
+      publication_year: 2017,
+      description: "A comprehensive examination of distributed storage engines, replication strategies, reliability trade-offs, and consensus algorithms.",
+      cover_url: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80",
+      total_copies: 4,
+      available_copies: 2,
+      shelf_location: "Tech B-04",
+      pages: 616,
+      language: "English"
+    },
+    {
+      id: 3,
+      title: "Dune",
+      author: "Frank Herbert",
+      isbn: "978-0441172719",
+      category: "Fiction",
+      publisher: "Chilton Books",
+      publication_year: 1965,
+      description: "A foundational science fiction narrative exploring desert planetary ecology, political succession, factions, and leadership.",
+      cover_url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&q=80",
+      total_copies: 6,
+      available_copies: 4,
+      shelf_location: "SciFi D-09",
+      pages: 688,
+      language: "English"
+    },
+    {
+      id: 4,
+      title: "1984",
+      author: "George Orwell",
+      isbn: "978-0451524935",
+      category: "Fiction",
+      publisher: "Secker & Warburg",
+      publication_year: 1949,
+      description: "A dystopian literary classic investigating authoritarian state surveillance, psychological orthodoxy, and individual autonomy.",
+      cover_url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&q=80",
+      total_copies: 8,
+      available_copies: 5,
+      shelf_location: "Classics C-01",
+      pages: 328,
+      language: "English"
+    },
+    {
+      id: 5,
+      title: "Sapiens: A Brief History of Humankind",
+      author: "Yuval Noah Harari",
+      isbn: "978-0062316097",
+      category: "History",
+      publisher: "Harper",
+      publication_year: 2014,
+      description: "An evolutionary history examining the cognitive, agricultural, and scientific developments that organized human society.",
+      cover_url: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=500&q=80",
+      total_copies: 5,
+      available_copies: 3,
+      shelf_location: "Hist H-05",
+      pages: 443,
+      language: "English"
+    },
+    {
+      id: 6,
+      title: "Structure and Interpretation of Computer Programs",
+      author: "Harold Abelson, Gerald Jay Sussman",
+      isbn: "978-0262510875",
+      category: "Technology",
+      publisher: "MIT Press",
+      publication_year: 1996,
+      description: "A landmark MIT curriculum on functional programming, symbolic computation, interpreter architecture, and algorithmic abstractions.",
+      cover_url: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=500&q=80",
+      total_copies: 3,
+      available_copies: 1,
+      shelf_location: "Tech A-01",
+      pages: 657,
+      language: "English"
+    },
+    {
+      id: 7,
+      title: "The Pragmatic Programmer",
+      author: "David Thomas, Andrew Hunt",
+      isbn: "978-0135957059",
+      category: "Technology",
+      publisher: "Addison-Wesley",
+      publication_year: 2019,
+      description: "Core tenets and methodologies for software engineering practice, debugging discipline, testing, and team collaboration.",
+      cover_url: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80",
+      total_copies: 4,
+      available_copies: 3,
+      shelf_location: "Tech B-02",
+      pages: 352,
+      language: "English"
+    },
+    {
+      id: 8,
+      title: "A Brief History of Time",
+      author: "Stephen Hawking",
+      isbn: "978-0553380163",
+      category: "Science",
+      publisher: "Bantam",
+      publication_year: 1988,
+      description: "A foundational cosmological study examining gravity, cosmic expansion, black hole mechanics, and the arrow of time.",
+      cover_url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&q=80",
+      total_copies: 4,
+      available_copies: 2,
+      shelf_location: "Sci S-03",
+      pages: 256,
+      language: "English"
+    }
+  ],
+  transactions: [
+    { id: 101, book_id: 1, user_id: 3, issue_date: "2026-10-01", due_date: "2026-10-15", status: "ACTIVE", notes: "Course reading" },
+    { id: 102, book_id: 2, user_id: 3, issue_date: "2026-09-15", due_date: "2026-09-29", status: "OVERDUE", notes: "Distributed systems research" },
+    { id: 103, book_id: 3, user_id: 2, issue_date: "2026-09-01", due_date: "2026-09-15", return_date: "2026-09-14", status: "RETURNED", notes: "Returned in good condition" }
+  ],
+  reservations: [
+    { id: 201, book_id: 6, user_id: 3, queue_position: 1, status: "PENDING", created_at: "2026-10-05" }
+  ],
+  fines: [
+    { id: 301, transaction_id: 102, user_id: 3, amount: 26, overdue_days: 13, paid: false, created_at: "2026-09-30" }
+  ],
+  notifications: [
+    { id: 401, title: "Overdue Notice", message: "Designing Data-Intensive Applications is 13 days overdue.", is_read: false },
+    { id: 402, title: "Reservation Queue", message: "You are #1 in queue for SICP.", is_read: false }
+  ]
+};
+function getStoredDB() {
+  try {
+    const item = localStorage.getItem("librax_unified_db");
+    if (item) return JSON.parse(item);
+  } catch (e) {
+  }
+  localStorage.setItem("librax_unified_db", JSON.stringify(DEFAULT_DATA));
+  return DEFAULT_DATA;
+}
+function saveStoredDB(data) {
+  try {
+    localStorage.setItem("librax_unified_db", JSON.stringify(data));
+  } catch (e) {
+  }
+}
+function getChaptersForBook(book) {
+  return [
+    {
+      title: "Chapter 1: Conceptual Foundations & Overview",
+      subtitle: `Core inquiries in ${book.category || "Literature"}`,
+      content: [
+        `${book.title} introduces the overarching framework and theoretical milestones in ${book.category || "its domain"}. Author ${book.author} establishes foundational paradigms that inform modern academic inquiry.`,
+        book.description || "A cornerstone reference volume catalogued within the LibraX Academic and Public Collections.",
+        "Learners and researchers are invited to explore the underlying methodology and examine practical applications across contemporary environments."
+      ]
+    },
+    {
+      title: "Chapter 2: Structural Methodologies & Case Analysis",
+      subtitle: "In-depth Framework Exploration",
+      content: [
+        `This section unpacks the core mechanics and analytical techniques characteristic of ${book.author}'s work.`,
+        "Detailed models emphasize rigorous discipline, systemic consistency, and reproducible design patterns.",
+        `Library Reference: ISBN ${book.isbn}. Shelf Location: ${book.shelf_location || "Main Floor"}.`
+      ]
+    },
+    {
+      title: "Chapter 3: Synthesis & Future Horizons",
+      subtitle: "Enduring Insights and Practical Takeaways",
+      content: [
+        `The concluding study synthesizes the broader lessons of ${book.title}. Practitioners reflect on lasting conceptual models that continue to influence research and practice.`,
+        "Copies are available for borrowing directly from the circulation desk or through instant 1-click checkout."
+      ]
+    }
+  ];
+}
+let audioCtx = null;
+function playTone(freq, duration = 0.05) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(1e-4, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {
+  }
+}
+function App() {
+  const [db, setDb] = useState(getStoredDB);
+  const [currentUser, setCurrentUser] = useState(db.users[0]);
+  const [currentRoute, setCurrentRoute] = useState("dashboard");
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [readerBook, setReaderBook] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [isDark, setIsDark] = useState(true);
+  const [toastMsg, setToastMsg] = useState(null);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  useEffect(() => {
+    saveStoredDB(db);
+  }, [db]);
+  useEffect(() => {
+    function handleKey(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+      }
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3500);
+  };
+  const handleRoleSwitch = (role) => {
+    const u = db.users.find((x) => x.role === role) || db.users[0];
+    setCurrentUser(u);
+    showToast(`Switched active profile to ${u.full_name} (${role})`);
+  };
+  const handleBorrowBook = (book) => {
+    if (book.available_copies <= 0) {
+      showToast(`No physical copies available for "${book.title}". Join hold queue instead.`);
+      return;
+    }
+    const updatedBooks = db.books.map(
+      (b) => b.id === book.id ? { ...b, available_copies: b.available_copies - 1 } : b
+    );
+    const newTx = {
+      id: Date.now(),
+      book_id: book.id,
+      user_id: currentUser.id,
+      issue_date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      due_date: new Date(Date.now() + 14 * 864e5).toISOString().split("T")[0],
+      status: "ACTIVE",
+      notes: `Self-checkout borrow by ${currentUser.full_name}`
+    };
+    setDb((prev) => ({
+      ...prev,
+      books: updatedBooks,
+      transactions: [newTx, ...prev.transactions]
+    }));
+    showToast(`\u26A1 Successfully borrowed "${book.title}"! Due in 14 days.`);
+  };
+  const handleReturnTransaction = (txId) => {
+    const tx = db.transactions.find((t) => t.id === txId);
+    if (!tx) return;
+    const updatedTx = db.transactions.map(
+      (t) => t.id === txId ? { ...t, status: "RETURNED", return_date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0] } : t
+    );
+    const updatedBooks = db.books.map(
+      (b) => b.id === tx.book_id ? { ...b, available_copies: b.available_copies + 1 } : b
+    );
+    setDb((prev) => ({
+      ...prev,
+      transactions: updatedTx,
+      books: updatedBooks
+    }));
+    showToast(`Book successfully returned to library holdings!`);
+  };
+  const handleSettleFine = (fineId) => {
+    setDb((prev) => ({
+      ...prev,
+      fines: prev.fines.map((f) => f.id === fineId ? { ...f, paid: true } : f)
+    }));
+    showToast(`Fine penalty successfully settled & recorded!`);
+  };
+  const handleResetDemo = () => {
+    localStorage.removeItem("librax_unified_db");
+    setDb(DEFAULT_DATA);
+    setCurrentUser(DEFAULT_DATA.users[0]);
+    showToast(`Database reset to pristine seed state!`);
+  };
+  const filteredBooks = useMemo(() => {
+    return db.books.filter((b) => {
+      const matchQuery = !searchQuery || b.title.toLowerCase().includes(searchQuery.toLowerCase()) || b.author.toLowerCase().includes(searchQuery.toLowerCase()) || b.isbn.includes(searchQuery);
+      const matchCategory = categoryFilter === "All" || b.category === categoryFilter;
+      return matchQuery && matchCategory;
+    });
+  }, [db.books, searchQuery, categoryFilter]);
+  return /* @__PURE__ */ React.createElement("div", { className: `min-h-screen flex flex-col ${isDark ? "dark bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}` }, /* @__PURE__ */ React.createElement("header", { className: "h-14 border-b border-border bg-surface px-4 flex items-center justify-between sticky top-0 z-30 select-none" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setCurrentRoute("landing"), className: "flex items-center gap-2 group" }, /* @__PURE__ */ React.createElement("span", { className: "w-8 h-8 rounded-md bg-accent flex items-center justify-center text-white shadow-xs" }, /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-4.5 h-4.5" })), /* @__PURE__ */ React.createElement("span", { className: "font-display font-bold tracking-wider text-sm hidden sm:inline text-ink" }, "LIBRAX")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1 text-xs" }, ["dashboard", "books", "transactions", "fines", "dsa-lab"].map((route) => /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      key: route,
+      onClick: () => setCurrentRoute(route),
+      className: `px-3 py-1.5 rounded-md capitalize transition-colors font-medium ${currentRoute === route ? "bg-accent/15 text-accent font-semibold" : "text-ink-muted hover:text-ink hover:bg-surface-2"}`
+    },
+    route === "dsa-lab" ? "DSA Engine" : route
+  )))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("div", { className: "hidden md:flex items-center gap-1 p-0.5 rounded-md bg-surface-2 border border-border text-3xs font-medium" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => handleRoleSwitch("ADMIN"),
+      className: `px-2 py-1 rounded transition-colors flex items-center gap-1 ${currentUser.role === "ADMIN" ? "bg-amber-500/20 text-amber-400 font-bold" : "text-ink-muted hover:text-ink"}`
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "Shield", className: "w-3 h-3 text-amber-400" }),
+    " Admin"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => handleRoleSwitch("LIBRARIAN"),
+      className: `px-2 py-1 rounded transition-colors flex items-center gap-1 ${currentUser.role === "LIBRARIAN" ? "bg-emerald-500/20 text-emerald-400 font-bold" : "text-ink-muted hover:text-ink"}`
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "BookMarked", className: "w-3 h-3 text-emerald-400" }),
+    " Librarian"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => handleRoleSwitch("STUDENT"),
+      className: `px-2 py-1 rounded transition-colors flex items-center gap-1 ${currentUser.role === "STUDENT" ? "bg-blue-500/20 text-blue-400 font-bold" : "text-ink-muted hover:text-ink"}`
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "GraduationCap", className: "w-3 h-3 text-blue-400" }),
+    " Student"
+  )), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setIsDark(!isDark),
+      className: "p-1.5 rounded-md text-ink-muted hover:text-ink hover:bg-surface-2 transition-colors",
+      title: "Toggle Theme"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: isDark ? "Sun" : "Moon", className: "w-4 h-4 text-warn" })
+  ), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 pl-2 border-l border-border" }, /* @__PURE__ */ React.createElement("span", { className: "w-6 h-6 rounded-full bg-accent/20 text-accent font-bold text-3xs flex items-center justify-center" }, currentUser.full_name[0]), /* @__PURE__ */ React.createElement("span", { className: "text-xs font-semibold text-ink hidden lg:inline" }, currentUser.full_name.split(" ")[0])))), toastMsg && /* @__PURE__ */ React.createElement("div", { className: "fixed bottom-5 right-5 z-50 bg-slate-900 border border-accent/40 text-white px-4 py-2.5 rounded-lg shadow-2xl flex items-center gap-2.5 text-xs animate-bounce" }, /* @__PURE__ */ React.createElement("span", { className: "w-2 h-2 rounded-full bg-accent animate-ping" }), /* @__PURE__ */ React.createElement("span", null, toastMsg)), /* @__PURE__ */ React.createElement("main", { className: "flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6" }, currentRoute === "dashboard" && /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold font-serif text-ink" }, "Operational Headquarters"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-muted mt-0.5" }, "Real-time inventory metrics, circulation velocity, and audit trail.")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("button", { onClick: handleResetDemo, className: "px-3 py-1.5 rounded border border-border text-xs text-ink-muted hover:text-ink hover:bg-surface-2 flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement(Icon, { name: "RefreshCw", className: "w-3.5 h-3.5" }), " Reset Demo"), /* @__PURE__ */ React.createElement("button", { onClick: () => setCurrentRoute("books"), className: "px-3 py-1.5 rounded btn-primary text-xs font-semibold flex items-center gap-1.5 shadow-sm" }, /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-3.5 h-3.5" }), " Explore Books"))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-4" }, /* @__PURE__ */ React.createElement("div", { className: "card p-4" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xs uppercase tracking-wider text-ink-muted font-bold block mb-1" }, "Catalogued Books"), /* @__PURE__ */ React.createElement("span", { className: "text-2xl font-bold font-mono text-ink" }, db.books.length), /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-emerald-500 block mt-1" }, "100% indexed")), /* @__PURE__ */ React.createElement("div", { className: "card p-4" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xs uppercase tracking-wider text-ink-muted font-bold block mb-1" }, "Active Loans"), /* @__PURE__ */ React.createElement("span", { className: "text-2xl font-bold font-mono text-accent" }, db.transactions.filter((t) => t.status === "ACTIVE").length), /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted block mt-1" }, "In circulation")), /* @__PURE__ */ React.createElement("div", { className: "card p-4" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xs uppercase tracking-wider text-ink-muted font-bold block mb-1" }, "Overdue Loans"), /* @__PURE__ */ React.createElement("span", { className: "text-2xl font-bold font-mono text-crit" }, db.transactions.filter((t) => t.status === "OVERDUE").length), /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-crit block mt-1" }, "Daily penalty accrual")), /* @__PURE__ */ React.createElement("div", { className: "card p-4" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xs uppercase tracking-wider text-ink-muted font-bold block mb-1" }, "Outstanding Fines"), /* @__PURE__ */ React.createElement("span", { className: "text-2xl font-bold font-mono text-crit" }, "$", db.fines.filter((f) => !f.paid).reduce((acc, f) => acc + f.amount, 0).toFixed(2)), /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted block mt-1" }, "Awaiting settlement"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ React.createElement("h2", { className: "text-base font-bold text-ink flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement(Icon, { name: "Sparkles", className: "w-4 h-4 text-accent" }), " Featured Collection"), /* @__PURE__ */ React.createElement("button", { onClick: () => setCurrentRoute("books"), className: "text-xs text-accent hover:underline flex items-center gap-1" }, "View all ", db.books.length, " books ", /* @__PURE__ */ React.createElement(Icon, { name: "ArrowRight", className: "w-3 h-3" }))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-4" }, db.books.slice(0, 4).map((book) => /* @__PURE__ */ React.createElement("div", { key: book.id, className: "card p-3 flex flex-col justify-between group hover:border-accent transition-all" }, /* @__PURE__ */ React.createElement("div", { className: "relative h-40 bg-surface-2 rounded overflow-hidden mb-2.5" }, /* @__PURE__ */ React.createElement("img", { src: book.cover_url, alt: book.title, className: "w-full h-full object-cover group-hover:scale-105 transition-transform" }), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setReaderBook(book),
+      className: "absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-semibold text-white gap-1.5 transition-opacity"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-4 h-4" }),
+    " Read Online"
+  )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-3xs font-mono uppercase text-accent font-semibold" }, book.category), /* @__PURE__ */ React.createElement("h3", { className: "text-xs font-semibold text-ink line-clamp-2 mt-0.5" }, book.title), /* @__PURE__ */ React.createElement("p", { className: "text-3xs text-ink-muted mt-0.5" }, book.author)), /* @__PURE__ */ React.createElement("div", { className: "pt-2 mt-2 border-t border-border flex items-center justify-between text-3xs" }, /* @__PURE__ */ React.createElement("span", { className: "text-accent font-semibold" }, book.available_copies, " avail"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => {
+        setSelectedBook(book);
+        setCurrentRoute("book-detail");
+      },
+      className: "text-ink-muted hover:text-ink underline"
+    },
+    "Details"
+  ))))))), currentRoute === "books" && /* @__PURE__ */ React.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold font-serif text-ink" }, "Master Library Catalogue"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-muted mt-0.5" }, "Showing ", filteredBooks.length, " titles in digital and physical collections."))), /* @__PURE__ */ React.createElement("div", { className: "card p-3 flex flex-col sm:flex-row gap-3" }, /* @__PURE__ */ React.createElement("div", { className: "relative flex-1" }, /* @__PURE__ */ React.createElement(Icon, { name: "Search", className: "w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" }), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: "text",
+      placeholder: "Search by title, author, or ISBN...",
+      value: searchQuery,
+      onChange: (e) => setSearchQuery(e.target.value),
+      className: "w-full pl-9 pr-3 py-1.5 bg-surface-2 rounded border border-border text-xs text-ink focus:outline-none focus:border-accent"
+    }
+  )), /* @__PURE__ */ React.createElement("div", { className: "flex gap-1.5 overflow-x-auto pb-1 sm:pb-0" }, ["All", "Technology", "Fiction", "History", "Science"].map((cat) => /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      key: cat,
+      onClick: () => setCategoryFilter(cat),
+      className: `px-3 py-1.5 rounded text-xs font-medium whitespace-nowrap transition-colors ${categoryFilter === cat ? "bg-accent text-white font-semibold" : "bg-surface-2 text-ink-muted hover:text-ink"}`
+    },
+    cat
+  )))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" }, filteredBooks.map((book) => /* @__PURE__ */ React.createElement("div", { key: book.id, className: "card p-3.5 flex flex-col justify-between group hover:border-accent hover:shadow-lg transition-all" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "relative h-48 bg-surface-2 rounded overflow-hidden mb-3" }, /* @__PURE__ */ React.createElement("img", { src: book.cover_url, alt: book.title, className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" }), /* @__PURE__ */ React.createElement("div", { className: "absolute top-2 right-2" }, /* @__PURE__ */ React.createElement("span", { className: "px-2 py-0.5 rounded-full text-3xs font-mono font-bold bg-accent text-white shadow-xs" }, book.available_copies, " avail")), /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 p-3 transition-opacity" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setReaderBook(book),
+      className: "w-full py-1.5 px-3 rounded bg-accent text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-4 h-4" }),
+    " Read Online"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => {
+        setSelectedBook(book);
+        setCurrentRoute("book-detail");
+      },
+      className: "w-full py-1 px-3 rounded bg-surface text-ink text-3xs font-medium flex items-center justify-center gap-1"
+    },
+    "Details ",
+    /* @__PURE__ */ React.createElement(Icon, { name: "ArrowRight", className: "w-3 h-3" })
+  ))), /* @__PURE__ */ React.createElement("span", { className: "text-3xs font-mono uppercase text-accent font-semibold" }, book.category), /* @__PURE__ */ React.createElement("h3", { className: "text-sm font-semibold text-ink line-clamp-2 mt-0.5" }, book.title), /* @__PURE__ */ React.createElement("p", { className: "text-2xs text-ink-muted mt-0.5" }, book.author)), /* @__PURE__ */ React.createElement("div", { className: "pt-3 mt-3 border-t border-border flex items-center justify-between text-xs" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setReaderBook(book),
+      className: "text-accent hover:underline flex items-center gap-1 font-semibold text-2xs"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-3.5 h-3.5" }),
+    " Read"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => handleBorrowBook(book),
+      className: "px-2.5 py-1 rounded bg-surface-2 hover:bg-accent hover:text-white transition-colors text-3xs font-semibold flex items-center gap-1"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "Zap", className: "w-3 h-3 text-amber-400" }),
+    " Borrow"
+  )))))), currentRoute === "book-detail" && selectedBook && /* @__PURE__ */ React.createElement("div", { className: "space-y-6 max-w-4xl mx-auto" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setCurrentRoute("books"),
+      className: "inline-flex items-center gap-1.5 text-xs text-ink-muted hover:text-ink transition-colors"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "ArrowLeft", className: "w-3.5 h-3.5" }),
+    " Back to Catalogue"
+  ), /* @__PURE__ */ React.createElement("div", { className: "card p-6 flex flex-col md:flex-row gap-8" }, /* @__PURE__ */ React.createElement("div", { className: "w-full md:w-60 shrink-0 flex flex-col items-center" }, /* @__PURE__ */ React.createElement("img", { src: selectedBook.cover_url, alt: selectedBook.title, className: "w-full h-80 object-cover rounded shadow-md border border-border" }), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setReaderBook(selectedBook),
+      className: "w-full mt-3 py-2 px-3 rounded btn-primary text-xs font-semibold flex items-center justify-center gap-2 shadow"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-4 h-4" }),
+    " Open & Read Book"
+  )), /* @__PURE__ */ React.createElement("div", { className: "flex-1 space-y-4" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("span", { className: "px-2 py-0.5 rounded text-3xs font-mono uppercase bg-accent/20 text-accent font-semibold" }, selectedBook.category), /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted" }, "\u2022 Shelf ", selectedBook.shelf_location)), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold font-serif text-ink mt-2" }, selectedBook.title), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-2 mt-0.5" }, "By ", selectedBook.author)), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-border text-xs" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted uppercase block" }, "ISBN"), /* @__PURE__ */ React.createElement("span", { className: "font-mono text-ink font-semibold" }, selectedBook.isbn)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted uppercase block" }, "Pages"), /* @__PURE__ */ React.createElement("span", null, selectedBook.pages, " pp")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted uppercase block" }, "Publisher"), /* @__PURE__ */ React.createElement("span", null, selectedBook.publisher)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted uppercase block" }, "In Stock"), /* @__PURE__ */ React.createElement("span", { className: "font-semibold text-accent" }, selectedBook.available_copies, " of ", selectedBook.total_copies))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { className: "text-xs font-semibold uppercase text-ink-muted mb-1" }, "Synopsis & Overview"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-2 leading-relaxed whitespace-pre-line" }, selectedBook.description)), /* @__PURE__ */ React.createElement("div", { className: "pt-4 border-t border-border flex flex-wrap gap-2.5" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setReaderBook(selectedBook),
+      className: "px-4 py-2 rounded btn-primary text-xs font-semibold flex items-center gap-1.5 shadow"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-4 h-4" }),
+    " Read Online"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => handleBorrowBook(selectedBook),
+      className: "px-4 py-2 rounded bg-surface-2 border border-border hover:border-accent text-xs font-semibold flex items-center gap-1.5"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "Zap", className: "w-4 h-4 text-amber-400" }),
+    " \u26A1 Borrow Now (1-Click)"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => {
+        const newQueue = { id: Date.now(), book_id: selectedBook.id, user_id: currentUser.id, queue_position: 1, status: "PENDING", created_at: (/* @__PURE__ */ new Date()).toISOString() };
+        setDb((prev) => ({ ...prev, reservations: [newQueue, ...prev.reservations] }));
+        showToast(`Added to hold queue for "${selectedBook.title}"`);
+      },
+      className: "px-3 py-2 rounded border border-border text-xs text-ink-muted hover:text-ink"
+    },
+    "Join Hold Queue"
+  ))))), currentRoute === "transactions" && /* @__PURE__ */ React.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold font-serif text-ink" }, "Circulation & Borrow Ledger"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-muted mt-0.5" }, "Tracking checkouts, due dates, and returned inventory."))), /* @__PURE__ */ React.createElement("div", { className: "card overflow-hidden" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs text-left" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-surface-2 border-b border-border text-ink-muted uppercase text-3xs font-mono" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Book Title"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Borrower"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Issue Date"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Due Date"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Status"), /* @__PURE__ */ React.createElement("th", { className: "p-3 text-right" }, "Action"))), /* @__PURE__ */ React.createElement("tbody", { className: "divide-y divide-border" }, db.transactions.map((t) => {
+    const book = db.books.find((b) => b.id === t.book_id);
+    const user = db.users.find((u) => u.id === t.user_id);
+    return /* @__PURE__ */ React.createElement("tr", { key: t.id, className: "hover:bg-surface-2/40 transition-colors" }, /* @__PURE__ */ React.createElement("td", { className: "p-3" }, /* @__PURE__ */ React.createElement("span", { className: "font-semibold text-ink block" }, book?.title || `Book #${t.book_id}`), /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted font-mono" }, book?.isbn)), /* @__PURE__ */ React.createElement("td", { className: "p-3 text-ink-2" }, user?.full_name || "Member"), /* @__PURE__ */ React.createElement("td", { className: "p-3 text-ink-muted font-mono" }, t.issue_date), /* @__PURE__ */ React.createElement("td", { className: "p-3 font-mono" }, t.due_date), /* @__PURE__ */ React.createElement("td", { className: "p-3" }, /* @__PURE__ */ React.createElement("span", { className: `px-2 py-0.5 rounded text-3xs font-mono font-bold ${t.status === "ACTIVE" ? "bg-blue-500/20 text-blue-400" : t.status === "RETURNED" ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}` }, t.status)), /* @__PURE__ */ React.createElement("td", { className: "p-3 text-right" }, t.status !== "RETURNED" ? /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => handleReturnTransaction(t.id),
+        className: "px-2.5 py-1 rounded border border-border hover:border-accent text-accent font-semibold text-3xs transition-colors"
+      },
+      "Return Book"
+    ) : /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-ink-muted font-mono" }, "Completed")));
+  }))))), currentRoute === "fines" && /* @__PURE__ */ React.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold font-serif text-ink" }, "Fines & Penalties"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-muted mt-0.5" }, "Automated overdue fee assessment ($2.00/day late policy)."))), /* @__PURE__ */ React.createElement("div", { className: "card overflow-hidden" }, /* @__PURE__ */ React.createElement("table", { className: "w-full text-xs text-left" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-surface-2 border-b border-border text-ink-muted uppercase text-3xs font-mono" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Member"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Overdue Days"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Amount"), /* @__PURE__ */ React.createElement("th", { className: "p-3" }, "Status"), /* @__PURE__ */ React.createElement("th", { className: "p-3 text-right" }, "Settlement"))), /* @__PURE__ */ React.createElement("tbody", { className: "divide-y divide-border" }, db.fines.map((f) => {
+    const user = db.users.find((u) => u.id === f.user_id);
+    return /* @__PURE__ */ React.createElement("tr", { key: f.id, className: "hover:bg-surface-2/40" }, /* @__PURE__ */ React.createElement("td", { className: "p-3 text-ink font-medium" }, user?.full_name), /* @__PURE__ */ React.createElement("td", { className: "p-3 text-crit font-mono" }, f.overdue_days, " days"), /* @__PURE__ */ React.createElement("td", { className: "p-3 font-mono font-bold text-crit" }, "$", f.amount.toFixed(2)), /* @__PURE__ */ React.createElement("td", { className: "p-3" }, /* @__PURE__ */ React.createElement("span", { className: `px-2 py-0.5 rounded text-3xs font-mono font-bold ${f.paid ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}` }, f.paid ? "Settled" : "Unpaid")), /* @__PURE__ */ React.createElement("td", { className: "p-3 text-right" }, !f.paid ? /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => handleSettleFine(f.id),
+        className: "px-3 py-1 rounded btn-primary text-3xs font-semibold shadow-xs"
+      },
+      "Settle Fine"
+    ) : /* @__PURE__ */ React.createElement("span", { className: "text-3xs text-emerald-500 font-mono" }, "Paid in Full")));
+  }))))), currentRoute === "dsa-lab" && /* @__PURE__ */ React.createElement(DSALabVisualizer, null)), readerBook && /* @__PURE__ */ React.createElement(
+    DigitalBookReader,
+    {
+      book: readerBook,
+      onClose: () => setReaderBook(null),
+      onBorrow: () => {
+        handleBorrowBook(readerBook);
+        setReaderBook(null);
+      }
+    }
+  ), /* @__PURE__ */ React.createElement("footer", { className: "py-4 border-t border-border text-center text-3xs text-ink-muted select-none" }, "LibraX High-Performance Library Management System \u2022 Standalone Single-File Deployment Build"));
+}
+function DigitalBookReader({ book, onClose, onBorrow }) {
+  const chapters = useMemo(() => getChaptersForBook(book), [book]);
+  const [chapterIdx, setChapterIdx] = useState(0);
+  const [theme, setTheme] = useState("dark");
+  const [fontSize, setFontSize] = useState(17);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const currentChapter = chapters[chapterIdx] || chapters[0];
+  const toggleSpeech = () => {
+    if (!("speechSynthesis" in window)) return;
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(currentChapter.title + ". " + currentChapter.content.join(" "));
+      utter.rate = 0.95;
+      utter.onend = () => setIsSpeaking(false);
+      utter.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utter);
+      setIsSpeaking(true);
+    }
+  };
+  useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    };
+  }, [chapterIdx]);
+  const themeClasses = {
+    dark: { bg: "bg-slate-950", text: "text-slate-100", card: "bg-slate-900", border: "border-slate-800" },
+    sepia: { bg: "bg-[#fbf0d9]", text: "text-[#3d2f23]", card: "bg-[#f4ecd8]", border: "border-[#e4d4b8]" },
+    light: { bg: "bg-white", text: "text-slate-900", card: "bg-slate-50", border: "border-slate-200" }
+  }[theme];
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in" }, /* @__PURE__ */ React.createElement("div", { className: `w-full h-full sm:h-[92vh] sm:max-w-5xl rounded-none sm:rounded-xl shadow-2xl flex flex-col border ${themeClasses.border} ${themeClasses.bg} overflow-hidden` }, /* @__PURE__ */ React.createElement("div", { className: `h-14 px-4 flex items-center justify-between border-b ${themeClasses.border} ${themeClasses.card}` }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ React.createElement(Icon, { name: "BookOpen", className: "w-5 h-5 text-accent" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { className: "text-xs font-semibold line-clamp-1" }, book.title), /* @__PURE__ */ React.createElement("p", { className: "text-3xs text-ink-muted" }, "Chapter ", chapterIdx + 1, " of ", chapters.length))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: toggleSpeech,
+      className: `p-2 rounded transition-colors ${isSpeaking ? "bg-accent text-white animate-pulse" : "text-ink-muted hover:text-ink"}`,
+      title: isSpeaking ? "Pause audio" : "Listen with Text-to-Speech"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: isSpeaking ? "VolumeX" : "Volume2", className: "w-4 h-4" })
+  ), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1 border border-border rounded p-0.5" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setTheme("dark"), className: `px-2 py-0.5 text-3xs rounded ${theme === "dark" ? "bg-slate-800 text-white font-bold" : "text-ink-muted"}` }, "Dark"), /* @__PURE__ */ React.createElement("button", { onClick: () => setTheme("sepia"), className: `px-2 py-0.5 text-3xs rounded ${theme === "sepia" ? "bg-[#e8d8be] text-[#5c3a21] font-bold" : "text-ink-muted"}` }, "Sepia"), /* @__PURE__ */ React.createElement("button", { onClick: () => setTheme("light"), className: `px-2 py-0.5 text-3xs rounded ${theme === "light" ? "bg-white text-slate-900 font-bold" : "text-ink-muted"}` }, "Light")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setFontSize((p) => Math.max(14, p - 2)), className: "px-2 py-0.5 border border-border rounded text-3xs text-ink-muted hover:text-ink" }, "A-"), /* @__PURE__ */ React.createElement("button", { onClick: () => setFontSize((p) => Math.min(24, p + 2)), className: "px-2 py-0.5 border border-border rounded text-3xs text-ink-muted hover:text-ink" }, "A+")), /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "p-2 text-crit hover:bg-crit/10 rounded ml-2" }, /* @__PURE__ */ React.createElement(Icon, { name: "X", className: "w-5 h-5" })))), /* @__PURE__ */ React.createElement("div", { className: "flex-1 overflow-y-auto px-6 sm:px-16 py-8 leading-relaxed font-serif", style: { fontSize: `${fontSize}px` } }, /* @__PURE__ */ React.createElement("div", { className: "max-w-2xl mx-auto space-y-6" }, /* @__PURE__ */ React.createElement("div", { className: "border-b border-border pb-4" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xs uppercase font-mono tracking-wider text-accent font-semibold" }, book.author), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold mt-1 text-ink" }, currentChapter.title), /* @__PURE__ */ React.createElement("p", { className: "text-xs italic text-ink-muted mt-1" }, currentChapter.subtitle)), currentChapter.content.map((p, idx) => /* @__PURE__ */ React.createElement("p", { key: idx, className: "first-letter:text-2xl first-letter:font-bold first-letter:text-accent" }, p)), /* @__PURE__ */ React.createElement("div", { className: "pt-8 border-t border-border flex items-center justify-between text-xs" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => {
+        navigator.clipboard.writeText(`"${currentChapter.content[0]}" \u2014 From ${book.title}`);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2e3);
+      },
+      className: "text-xs text-accent hover:underline flex items-center gap-1 font-mono"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "Share2", className: "w-3.5 h-3.5" }),
+    " ",
+    copied ? "Excerpt Copied!" : "Copy Excerpt"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: onBorrow,
+      className: "px-3 py-1.5 rounded btn-primary text-xs font-semibold flex items-center gap-1 shadow"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "Zap", className: "w-3.5 h-3.5 text-amber-300" }),
+    " Borrow Physical Copy"
+  )))), /* @__PURE__ */ React.createElement("div", { className: `h-12 px-4 flex items-center justify-between border-t ${themeClasses.border} ${themeClasses.card}` }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setChapterIdx((p) => Math.max(0, p - 1)),
+      disabled: chapterIdx === 0,
+      className: "text-xs text-ink-muted hover:text-ink disabled:opacity-30 flex items-center gap-1"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "ArrowLeft", className: "w-3.5 h-3.5" }),
+    " Previous"
+  ), /* @__PURE__ */ React.createElement("span", { className: "text-3xs font-mono text-ink-muted" }, chapterIdx + 1, " / ", chapters.length), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => setChapterIdx((p) => Math.min(chapters.length - 1, p + 1)),
+      disabled: chapterIdx === chapters.length - 1,
+      className: "text-xs text-accent font-semibold disabled:opacity-30 flex items-center gap-1"
+    },
+    "Next ",
+    /* @__PURE__ */ React.createElement(Icon, { name: "ArrowRight", className: "w-3.5 h-3.5" })
+  ))));
+}
+function DSALabVisualizer() {
+  const [array, setArray] = useState([45, 12, 89, 33, 67, 23, 90, 56, 11, 78, 34, 62]);
+  const [activeIndices, setActiveIndices] = useState([]);
+  const [sortedIndices, setSortedIndices] = useState([]);
+  const [algorithm, setAlgorithm] = useState("bubble");
+  const [isRunning, setIsRunning] = useState(false);
+  const [stats, setStats] = useState({ comparisons: 0, swaps: 0 });
+  const cancelRef = useRef(false);
+  const resetArray = (preset = "random") => {
+    cancelRef.current = true;
+    setIsRunning(false);
+    setActiveIndices([]);
+    setSortedIndices([]);
+    setStats({ comparisons: 0, swaps: 0 });
+    let arr = [];
+    if (preset === "random") {
+      for (let i = 0; i < 14; i++) arr.push(Math.floor(Math.random() * 85) + 15);
+    } else if (preset === "reversed") {
+      arr = [95, 88, 80, 72, 65, 58, 50, 42, 35, 28, 20, 14];
+    } else if (preset === "nearly") {
+      arr = [15, 22, 28, 45, 39, 52, 60, 68, 75, 71, 88, 95];
+    }
+    setArray(arr);
+  };
+  const runSorting = async () => {
+    if (isRunning) return;
+    setIsRunning(true);
+    cancelRef.current = false;
+    let arr = [...array];
+    let comparisons = 0;
+    let swaps = 0;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    if (algorithm === "bubble") {
+      const n = arr.length;
+      for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+          if (cancelRef.current) return;
+          setActiveIndices([j, j + 1]);
+          comparisons++;
+          playTone(200 + arr[j] * 6);
+          setStats({ comparisons, swaps });
+          await sleep(140);
+          if (arr[j] > arr[j + 1]) {
+            const temp = arr[j];
+            arr[j] = arr[j + 1];
+            arr[j + 1] = temp;
+            swaps++;
+            setArray([...arr]);
+            setStats({ comparisons, swaps });
+            await sleep(140);
+          }
+        }
+        setSortedIndices((prev) => [...prev, n - i - 1]);
+      }
+      setSortedIndices(arr.map((_, idx) => idx));
+    } else if (algorithm === "selection") {
+      const n = arr.length;
+      for (let i = 0; i < n; i++) {
+        let minIdx = i;
+        for (let j = i + 1; j < n; j++) {
+          if (cancelRef.current) return;
+          setActiveIndices([i, j]);
+          comparisons++;
+          playTone(200 + arr[j] * 6);
+          setStats({ comparisons, swaps });
+          await sleep(120);
+          if (arr[j] < arr[minIdx]) minIdx = j;
+        }
+        if (minIdx !== i) {
+          const temp = arr[i];
+          arr[i] = arr[minIdx];
+          arr[minIdx] = temp;
+          swaps++;
+          setArray([...arr]);
+        }
+        setSortedIndices((prev) => [...prev, i]);
+      }
+    }
+    setActiveIndices([]);
+    setIsRunning(false);
+  };
+  return /* @__PURE__ */ React.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold font-serif text-ink" }, "C Algorithm & DSA Engine"), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-ink-muted mt-0.5" }, "Real-time memory access simulation with Web Audio API sound synthesis.")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("span", { className: "px-2.5 py-1 rounded bg-accent/15 text-accent text-xs font-mono font-bold" }, "154 Unit Tests Passed"))), /* @__PURE__ */ React.createElement("div", { className: "card p-4 space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "h-56 bg-surface-2 rounded-lg p-4 flex items-end justify-center gap-2 border border-border" }, array.map((val, idx) => {
+    const isActive = activeIndices.includes(idx);
+    const isSorted = sortedIndices.includes(idx);
+    return /* @__PURE__ */ React.createElement("div", { key: idx, className: "flex-1 flex flex-col items-center gap-1 h-full justify-end" }, /* @__PURE__ */ React.createElement("span", { className: "text-3xs font-mono text-ink-muted" }, val), /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: `w-full rounded-t transition-all duration-150 ${isActive ? "bg-amber-400 scale-105 shadow-md shadow-amber-400/30" : isSorted ? "bg-emerald-500" : "bg-accent"}`,
+        style: { height: `${val / 100 * 85}%` }
+      }
+    ));
+  })), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap items-center justify-between gap-3 pt-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      value: algorithm,
+      onChange: (e) => setAlgorithm(e.target.value),
+      className: "px-3 py-1.5 rounded bg-surface border border-border text-xs text-ink font-semibold"
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "bubble" }, "Bubble Sort O(n\xB2)"),
+    /* @__PURE__ */ React.createElement("option", { value: "selection" }, "Selection Sort O(n\xB2)")
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: runSorting,
+      disabled: isRunning,
+      className: "px-4 py-1.5 rounded btn-primary text-xs font-semibold flex items-center gap-1.5 disabled:opacity-40"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "Play", className: "w-3.5 h-3.5" }),
+    " Start Sort"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => resetArray("random"),
+      className: "px-3 py-1.5 rounded border border-border text-xs text-ink-muted hover:text-ink flex items-center gap-1"
+    },
+    /* @__PURE__ */ React.createElement(Icon, { name: "RefreshCw", className: "w-3.5 h-3.5" }),
+    " New Array"
+  )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-4 text-xs font-mono" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-ink-muted" }, "Comparisons:"), " ", /* @__PURE__ */ React.createElement("span", { className: "text-accent font-bold" }, stats.comparisons)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "text-ink-muted" }, "Swaps:"), " ", /* @__PURE__ */ React.createElement("span", { className: "text-emerald-500 font-bold" }, stats.swaps))))));
+}
+
+function initLibraX() {
+  try {
+    const rootEl = document.getElementById("root");
+    if (!rootEl) return;
+    if (typeof ReactDOM !== 'undefined' && ReactDOM.createRoot) {
+      ReactDOM.createRoot(rootEl).render(React.createElement(App, null));
+    } else {
+      setTimeout(initLibraX, 100);
+    }
+  } catch (err) {
+    console.error("Fatal render error:", err);
+    const rootEl = document.getElementById("root");
+    if (rootEl) {
+      rootEl.innerHTML = '<div style="background:#0f172a;color:#f8fafc;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:20px;"><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:32px;max-width:500px;text-align:center;"><h2 style="color:#ef4444;margin-bottom:12px;font-size:20px;">LibraX Initializing</h2><p style="color:#94a3b8;font-size:14px;margin-bottom:20px;">' + (err.message || 'Restoring database') + '</p><button onclick="localStorage.clear();location.reload()" style="background:#6366f1;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:600;cursor:pointer;">Reset & Reload</button></div></div>';
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLibraX);
+} else {
+  initLibraX();
+}
+</script>
+</body>
+</html>
