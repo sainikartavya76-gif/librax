@@ -1,117 +1,90 @@
-# 📚 LIBRAX — Professional Library Operations System
+# 📚 LIBRAX — Library Operations System
 
-<div align="center">
+**A full-stack library management project with a C-based Data Structures and Algorithms (DSA) engine.**
 
-# 🌐 [👉 CLICK HERE TO OPEN LIVE WEBSITE 👈](https://sainikartavya76-gif.github.io/librax/)
+[🌐 Live Demo](https://sainikartavya76-gif.github.io/librax/) · [💻 GitHub Repository](https://github.com/sainikartavya76-gif/librax)
 
-[![Live Demo](https://img.shields.io/badge/🌐_LIVE_WEBSITE-CLICK_HERE_TO_OPEN-success?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sainikartavya76-gif.github.io/librax/)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed%20&%20Active-blue?style=for-the-badge&logo=github)](https://sainikartavya76-gif.github.io/librax/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+## 📖 Project Overview
 
-**Direct Link:** **[https://sainikartavya76-gif.github.io/librax/](https://sainikartavya76-gif.github.io/librax/)**  
-*(Open directly in Chrome / Mobile / PC — zero installation required!)*
+LIBRAX is a library operations platform designed to simplify book catalogue management, member records, borrowing and returns, reservations, fines, and operational reporting. Alongside the web application, it includes a dedicated C-language DSA engine and an interactive algorithm visualization lab, connecting classroom DSA concepts with a practical application.
 
----
+## ✨ Key Features
 
-**A complete, production-grade Library Operations Platform with custom C DSA Engine.**
+- **Book catalogue:** Search, filter, view, add, and edit books.
+- **Member management:** Maintain member accounts and roles.
+- **Issue and return workflows:** Record book borrowing and returns.
+- **Reservations:** Manage book holds and queues.
+- **Fine management:** Track overdue fines and settlements.
+- **Dashboards and analytics:** View circulation statistics and activity.
+- **DSA lab:** Explore algorithm visualizations step by step.
+- **Role-based interfaces:** Separate experiences for administrators, librarians, and students.
 
-*React 18 • TypeScript • Vite • Tailwind CSS • Express / SQLite • C DSA Engine (GCC)*
+> **Deployment note:** The live GitHub Pages demo and locally run full-stack application have different execution environments. The local setup uses the Node.js/Express API and persistent SQLite database; do not assume that GitHub Pages hosts the Node.js backend.
 
-</div>
+## 🛠️ Technology Stack
 
----
+| Layer | Technologies |
+| --- | --- |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS |
+| Backend | Node.js, Express |
+| Database | SQLite |
+| DSA Engine | C (C99), GCC |
+| Visualization | Interactive DSA lab and web UI |
+| Hosting | GitHub Pages (web demo) |
 
-## ⚡ Instant Live Access
+## 🧠 Data Structures and Algorithms
 
-Anyone visiting this repository can immediately launch and interact with the system:
+The C DSA engine includes:
 
-| Access Method | Link / Instructions | Features Included |
-|---|---|---|
-| **🌐 Online Web App** | **[Launch Live LibraX](https://sainikartavya76-gif.github.io/librax/)** | Full UI, Digital Book Reader, Book Issue/Return, Fines Ledger, DSA Sorting Visualizer, In-Browser DB |
-| **💻 Local Fullstack** | Double-click `start.bat` on Windows | Real Node.js + Express REST API on `localhost:8000`, Persistent SQLite DB, Seeded Circulation Ledgers |
+- **Data structures:** Arrays, singly and doubly linked lists, stacks, queues, circular queues, binary search trees, hash tables, heaps, and graph representations.
+- **Sorting:** Bubble, selection, insertion, merge, quick, and heap sort.
+- **Searching:** Linear and binary search.
+- **Graph traversal:** Breadth-first search (BFS) and depth-first search (DFS).
 
----
+These concepts are relevant to catalogue searching, reservations, data organization, and the project's DSA learning features.
 
-## Overview
+## 🏗️ Project Structure
 
-**LIBRAX** is a comprehensive Library Management System designed for institutions that prioritize precision, reliability, and academic depth. It combines an editorial book-catalogue aesthetic with an operational workspace layout, real persistent database transactions, and a custom C data structures and algorithms engine with 154 passing unit tests.
-
----
-
-## System Architecture
-
-```mermaid
-flowchart TD
-    Client["React 18 + TypeScript Client\n(Vite, Tailwind, Recharts)\nDark-mode first, Editorial Typography"]
-    API["Authoritative Backend API\n(Node.js / Express + SQLite)\nJWT Authentication, RESTful Endpoints"]
-    DB[("Persistent Storage\n(SQLite / PostgreSQL)\nUsers, Books, Loans, Fines, Queues")]
-    DSA["C DSA Engine (GCC C99)\nSorting, Search, Trees, Heaps, Graph BFS/DFS"]
-
-    Client <-->|REST API / JWT| API
-    API <-->|SQL Queries / Transactions| DB
-    API <-->|Algorithm Processing| DSA
+```text
+librax/
+├── frontend/           # React/TypeScript web application
+├── node-backend/       # Node.js/Express backend
+├── backend/            # Additional backend components
+├── dsa-engine/         # C data structures, algorithms and tests
+├── standalone/         # Standalone web build
+├── API.md              # API documentation
+├── ARCHITECTURE.md     # System design
+├── DATABASE.md         # Database documentation
+├── DSA.md              # DSA documentation
+├── TESTING.md          # Testing documentation
+└── README.md           # Project overview
 ```
 
----
+## 🚀 How to Run
 
-## Features
+### Option 1: Open the live demo
 
-### 1. 20 Fully Implemented Application Pages
-1. **Public Landing Page** (`/`): Editorial hero, live statistics strip, capability breakdown, quick demo links.
-2. **Login Page** (`/login`): Secure JWT authentication, password reveal toggle, one-click demo role switcher.
-3. **Registration Page** (`/register`): Role-guarded self-registration for students and library members.
-4. **Password Recovery** (`/forgot-password`): Step-by-step reset instructions with email verification flow.
-5. **Admin Operations Dashboard** (`/app/dashboard`): Operational workspace layout, circulation summary tiles, overdue loan tracking, quick actions.
-6. **Librarian Operations Dashboard**: Real-time activity audit timeline, instant book issuance and return dialogs.
-7. **Student Dashboard**: Individual loan history, due date countdowns, outstanding balance breakdown.
-8. **Book Catalogue** (`/app/books`): Dual Grid/List views, debounced full-text search, category filters, availability toggles, pagination.
-9. **Book Details View** (`/app/books/:id`): High-resolution cover fallback, hold queues, holdings count, shelf location.
-10. **Add Book** (`/app/books/add`): Form validation, ISBN duplication check, copy tracking.
-11. **Edit Book** (`/app/books/:id/edit`): Update inventory and metadata in real time.
-12. **Member Management** (`/app/members`): User directory, activation/suspension toggles, role assignments.
-13. **Book Issue & Return Workflows**: Atomic balance checks, copy decrements, transaction logging.
-14. **Transaction History** (`/app/transactions`): Filterable active, returned, and overdue borrow logs.
-15. **Reservation Queue** (`/app/reservations`): FIFO priority queue holding books for next in line.
-16. **Fine Management** (`/app/fines`): Automated fee assessment at $2.00/day late, one-click settlement.
-17. **Operational Analytics** (`/app/analytics`): Database-backed line charts (issuance vs. returns), category donuts, top borrowed titles.
-18. **Interactive DSA Lab** (`/app/dsa-lab`): 7 visualizers with step-by-step playback, comparisons, and swap counters.
-19. **Activity Logs** (`/app/activity`): Comprehensive chronological audit trail.
-20. **Notifications** (`/app/notifications`): Unread counts, batch mark-as-read, real-time alert items.
-21. **Profile & Settings** (`/app/settings`): Theme toggle (Dark/Light), password update, circulation policy parameters.
-22. **404 Not Found Page**: Art-directed error screen with clean navigation escape hatches.
+Visit: **https://sainikartavya76-gif.github.io/librax/**
 
----
+### Option 2: Run the full-stack application locally
 
-## Demo Credentials
-
-| Role | Email | Password | Permissions |
-|------|-------|----------|-------------|
-| **Administrator** | `admin@librax.com` | `Admin@123` | Full access across all settings, members, transactions, and books |
-| **Librarian** | `librarian@librax.com` | `Lib@123` | Issues, returns, holds, catalogue management, and audit logs |
-| **Student** | `student@librax.com` | `Student@123` | Personal loans, catalogue browsing, joining reservation queues |
-
----
-
-## Quick Start & Running Locally
-
-### Option A: One-Command Fullstack Start (Port 8000)
+**Prerequisites:** Git and Node.js/npm. A C compiler is needed to build or test the C engine.
 
 ```bash
-# Clone the repository
 git clone https://github.com/sainikartavya76-gif/librax.git
 cd librax
-
-# Install dependencies and start server
 npm run setup
 npm start
 ```
-*Or on Windows, simply double-click `start.bat`.*
 
-Open your browser at: **`http://localhost:8000`**
+Open **http://localhost:8000** in your browser.
 
-### Option B: Separate Frontend & Backend Development
+On Windows, the repository also includes `start.bat`.
 
-**Terminal 1 — Backend:**
+### Option 3: Run frontend and backend separately
+
+Backend terminal:
+
 ```bash
 cd node-backend
 npm install
@@ -119,25 +92,19 @@ npm run seed
 npm start
 ```
 
-**Terminal 2 — Frontend Dev Server:**
+Frontend terminal (from the repository root, in a separate terminal):
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Open your browser at: **`http://localhost:5173`**
 
----
+Open **http://localhost:5173**.
 
-## C DSA Engine
+## 🧪 Testing
 
-The C engine is implemented in standard C99 with modular `.c` and `.h` headers and zero third-party dependencies.
-
-### Included Data Structures & Algorithms
-- **Data Structures**: Array, Singly Linked List, Doubly Linked List, Stack, Queue, Circular Queue, Binary Search Tree (BST), Hash Table with Chaining, Binary Heap (Min & Max), Graph (Adjacency Matrix).
-- **Algorithms**: Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort, Heap Sort, Linear Search, Binary Search, Graph BFS, Graph DFS.
-
-### Running C Unit Tests
+The repository documents a C DSA test suite with **154 passing tests**. To run it on a Windows system with MinGW Make:
 
 ```bash
 cd dsa-engine
@@ -145,36 +112,32 @@ mingw32-make test
 ./test_all.exe
 ```
 
-**Unit Test Output:**
-```
-=====================================================
-         LIBRAX DSA COMPREHENSIVE TEST SUITE         
-=====================================================
---- Testing Sorting Algorithms ---
-[PASS] Bubble Sort: sorts unsorted array with duplicates
-[PASS] Selection Sort: sorts unsorted array with duplicates
-[PASS] Insertion Sort: sorts unsorted array with duplicates
-[PASS] Merge Sort: divide-and-conquer recursive sort
-[PASS] Quick Sort: Lomuto partitioning sort
-[PASS] Heap Sort: max-heap construction and extraction
-...
-=====================================================
-TEST SUMMARY: 154 PASSED, 0 FAILED
-=====================================================
-```
+The reported test result comes from the repository documentation; verify locally before presenting it as a fresh test run.
+
+## 👥 Team Members and Responsibilities
+
+The following is a **proposed division of responsibilities** for the five-member team. Please confirm it reflects each person's actual contribution before submission.
+
+| Team Member | Proposed Role | Responsibility |
+| --- | --- | --- |
+| **Kartavya** | Team Leader & Backend Developer | Team coordination, backend services, API workflows, and integration. |
+| **Aaradhya Agarwal** | Frontend Developer | React components, responsive interface implementation, and frontend functionality. |
+| **Veer** | UI/UX Designer | Interface layouts, user flows, and usability planning. |
+| **Kushan** | DSA Implementation | Data structure and algorithm modules in C. |
+| **Aarush** | Database Management & Testing | Database design, records, and functional testing. |
+
+## 📚 Additional Documentation
+
+- [System Architecture](ARCHITECTURE.md)
+- [DSA Engine](DSA.md)
+- [Database](DATABASE.md)
+- [API Reference](API.md)
+- [Testing](TESTING.md)
+
+## 🎯 Learning Outcomes
+
+This project demonstrates how data structures and algorithms can be combined with a modern web interface, backend APIs, and database operations to solve real-world library management problems.
 
 ---
 
-## Documentation Index
-
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) — Architectural overview, data flows, and layer separation
-- [`DSA.md`](DSA.md) — Technical guide to all C algorithms, time & space complexities, and library use cases
-- [`DATABASE.md`](DATABASE.md) — Database schema, relationships, indexes, constraints, and migrations
-- [`API.md`](API.md) — Full REST API endpoint specification with request/response payloads
-- [`TESTING.md`](TESTING.md) — Testing strategies, test suites, and verification procedures
-
----
-
-## License
-
-MIT License — Created by [sainikartavya76-gif](https://github.com/sainikartavya76-gif).
+**LIBRAX — A DSA-based Library Management Project**
