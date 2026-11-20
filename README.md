@@ -1,12 +1,34 @@
-# LIBRAX — Professional Fullstack Library Operations System
+# 📚 LIBRAX — Professional Library Operations System
 
 <div align="center">
+
+# 🌐 [👉 CLICK HERE TO OPEN LIVE WEBSITE 👈](https://sainikartavya76-gif.github.io/librax/)
+
+[![Live Demo](https://img.shields.io/badge/🌐_LIVE_WEBSITE-CLICK_HERE_TO_OPEN-success?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sainikartavya76-gif.github.io/librax/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed%20&%20Active-blue?style=for-the-badge&logo=github)](https://sainikartavya76-gif.github.io/librax/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+**Direct Link:** **[https://sainikartavya76-gif.github.io/librax/](https://sainikartavya76-gif.github.io/librax/)**  
+*(Open directly in Chrome / Mobile / PC — zero installation required!)*
+
+---
 
 **A complete, production-grade Library Operations Platform with custom C DSA Engine.**
 
 *React 18 • TypeScript • Vite • Tailwind CSS • Express / SQLite • C DSA Engine (GCC)*
 
 </div>
+
+---
+
+## ⚡ Instant Live Access
+
+Anyone visiting this repository can immediately launch and interact with the system:
+
+| Access Method | Link / Instructions | Features Included |
+|---|---|---|
+| **🌐 Online Web App** | **[Launch Live LibraX](https://sainikartavya76-gif.github.io/librax/)** | Full UI, Digital Book Reader, Book Issue/Return, Fines Ledger, DSA Sorting Visualizer, In-Browser DB |
+| **💻 Local Fullstack** | Double-click `start.bat` on Windows | Real Node.js + Express REST API on `localhost:8000`, Persistent SQLite DB, Seeded Circulation Ledgers |
 
 ---
 
